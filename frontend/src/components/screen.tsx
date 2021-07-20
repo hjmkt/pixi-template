@@ -261,6 +261,40 @@ const Problem = (props) => {
         updateValidity(nvs);
     };
 
+    const rot90 = () => {
+        let nvs = [];
+        const center = [Math.round(max/2), Math.round(max/2)];
+        for(var i=0; i<props.problem.figure.vertices.length; ++i){
+            const v = vertices[i];
+            const dx = v[0] - center[0];
+            const dy = v[1] - center[1];
+            const nd = [-dy, dx];
+            const nv = [center[0]+nd[0], center[1]+nd[1]];
+            setVertices[i](nv);
+            nvs.push(nv);
+        }
+        setDislikes(calculateDislikes(nvs));
+        updateValidity(nvs);
+    };
+
+    const rot10 = () => {
+        let nvs = [];
+        const center = [Math.round(max/2), Math.round(max/2)];
+        for(var i=0; i<props.problem.figure.vertices.length; ++i){
+            const v = vertices[i];
+            const sin = Math.sin(Math.PI/18);
+            const cos = Math.cos(Math.PI/18);
+            const dx = v[0] - center[0];
+            const dy = v[1] - center[1];
+            const nd = [Math.round(cos*dx-sin*dy), Math.round(sin*dx+cos*dy)];
+            const nv = [center[0]+nd[0], center[1]+nd[1]];
+            setVertices[i](nv);
+            nvs.push(nv);
+        }
+        setDislikes(calculateDislikes(nvs));
+        updateValidity(nvs);
+    };
+
     const search = () => {
         setLoading(true);
         fetch("search", {
@@ -391,6 +425,12 @@ const Problem = (props) => {
                     </Row>
                     <Row className="my-1">
                         <Button onClick={vflip} className="ml-1" style={{width: "6em"}}>VFlip</Button>
+                    </Row>
+                    <Row className="my-1">
+                        <Button onClick={rot90} className="ml-1" style={{width: "6em"}}>Rot90</Button>
+                    </Row>
+                    <Row className="my-1">
+                        <Button onClick={rot10} className="ml-1" style={{width: "6em"}}>Rot10</Button>
                     </Row>
                     <Row className="my-1 mt-3">
                         <Button variant="info" onClick={search} className="ml-1" style={{width: "6em"}}>Search</Button>
