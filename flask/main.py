@@ -10,12 +10,12 @@ import time
 import json
 
 
-app = Flask(__name__, static_folder='public/static', template_folder='public')
+app = Flask(__name__, static_folder=os.path.join('public', 'static'), template_folder='public')
 
 @app.route('/problems', methods=['GET'])
 def problems():
     dat = []
-    for file in sorted(glob('public/static/problems/*.json'), key=lambda x: int(x.split('/')[-1][:-5])):
+    for file in sorted(glob(os.path.join('public', 'static', 'problems', '*.json')), key=lambda x: int(os.path.basename(x)[:-5])):
         with open(file) as f:
             dat.append(json.load(f))
     return jsonify(dat)
@@ -37,9 +37,7 @@ def search():
     data = request.data.decode('utf-8')
     try:
         data = json.loads(data)
-        print(data)
         res = solve(data['problem'], data['vertices'])
-        print(res)
         return jsonify(res)
     except:
         return jsonify([])

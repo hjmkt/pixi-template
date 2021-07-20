@@ -621,9 +621,7 @@ def solve(problem, vertices):
     max_count = 10
     res = find_feasible_solution(problem, vertices, problem['epsilon'], 0, True)
     # return res
-    print('res', res)
     if res is None:
         return vertices
     ref = optimize_solution(problem, res, problem['epsilon'])
-    print('ref', ref)
     return ref
