@@ -2,7 +2,6 @@ import React from 'react';
 import {Spinner, Nav, Navbar, NavDropdown, Form, FormControl, Button, Card, Row, Col} from 'react-bootstrap';
 import {Stage, Sprite, Container, Graphics} from '@inlet/react-pixi';
 
-const scale = 4;
 var lastValidationTime = 0;
 var validationTimeout = null;
 
@@ -12,14 +11,14 @@ const Vertex = props => {
 
     const mouseDown = e => {
         setDragging(true);
-        let pos = [Math.floor(Math.floor(e.data.global.x/scale)*scale/2), Math.floor(Math.floor(e.data.global.y/scale)*scale/2)];
-        props.update([Math.floor(pos[0]*2/scale)-props.ox, Math.floor(pos[1]*2/scale)-props.oy]);
+        let pos = [Math.floor(Math.floor(e.data.global.x/props.scale)*props.scale/2), Math.floor(Math.floor(e.data.global.y/props.scale)*props.scale/2)];
+        props.update([Math.floor(pos[0]*2/props.scale)-props.ox, Math.floor(pos[1]*2/props.scale)-props.oy]);
     };
 
     const mouseMove = e => {
         if(dragging){
-            let pos = [Math.floor(Math.floor(e.data.global.x/scale)*scale/2), Math.floor(Math.floor(e.data.global.y/scale)*scale/2)];
-            props.update([Math.floor(pos[0]*2/scale)-props.ox, Math.floor(pos[1]*2/scale)-props.oy]);
+            let pos = [Math.floor(Math.floor(e.data.global.x/props.scale)*props.scale/2), Math.floor(Math.floor(e.data.global.y/props.scale)*props.scale/2)];
+            props.update([Math.floor(pos[0]*2/props.scale)-props.ox, Math.floor(pos[1]*2/props.scale)-props.oy]);
         }
     };
 
@@ -33,15 +32,15 @@ const Vertex = props => {
         g.endFill();
     });
 
-    const position = [(Math.floor(props.vertex[0]+props.ox)*scale/2), Math.floor((props.vertex[1]+props.oy)*scale/2)];
+    const position = [(Math.floor(props.vertex[0]+props.ox)*props.scale/2), Math.floor((props.vertex[1]+props.oy)*props.scale/2)];
 
     return <Graphics x={position[0]} y={position[1]} draw={draw} interactive={true} mousedown={mouseDown} mousemove={mouseMove} mouseup={mouseUp} />;
 };
 
 
 const Edge = props => {
-    const adjustX = x => Math.floor((x+props.ox)*scale);
-    const adjustY = y => Math.floor((y+props.oy)*scale);
+    const adjustX = x => Math.floor((x+props.ox)*props.scale);
+    const adjustY = y => Math.floor((y+props.oy)*props.scale);
     const start = [adjustX(props.start[0]), adjustY(props.start[1])];
     const end = [adjustX(props.end[0]), adjustY(props.end[1])];
     const dist = (x, y) => (x[0]-y[0])*(x[0]-y[0])+(x[1]-y[1])*(x[1]-y[1]);
@@ -83,6 +82,7 @@ const Problem = (props) => {
     const [dislikes, setDislikes] = React.useState(0);
     const [valid, setValid] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [scale, setScale] = React.useState(4);
 
     for(var i=0; i<100; ++i){
         const [vertex, setVertex] = React.useState(i<props.problem.figure.vertices.length? props.problem.figure.vertices[i] : [0, 0]);
@@ -156,7 +156,7 @@ const Problem = (props) => {
             g.lineTo(max*scale+margin*scale*2, x*scale);
             g.endFill();
         }
-    }, [props]);
+    }, [props, scale]);
 
     const updateValidity = (vs=vertices) => {
         const now = Date.now();
@@ -296,6 +296,14 @@ const Problem = (props) => {
         updateValidity(nvs);
     }
 
+    const zoomin = () => {
+        setScale(scale+1);
+    };
+
+    const zoomout = () => {
+        setScale(Math.max(1, scale-1));
+    };
+
     const download = () => {
         const dat = {vertices: vertices};
         const blob = new Blob([JSON.stringify(dat, null, 2)], {type : 'application/json'});
@@ -387,6 +395,12 @@ const Problem = (props) => {
                     <Row className="my-1 mt-3">
                         <Button variant="info" onClick={search} className="ml-1" style={{width: "6em"}}>Search</Button>
                     </Row>
+                    <Row className="my-1">
+                        <Button variant="info" onClick={zoomin} className="ml-1" style={{width: "6em"}}>+</Button>
+                    </Row>
+                    <Row className="my-1">
+                        <Button variant="info" onClick={zoomout} className="ml-1" style={{width: "6em"}}>-</Button>
+                    </Row>
                     <Row className="my-1 mt-3">
                         <Button variant="success" onClick={download} className="ml-1" style={{width: "6em"}}>Download</Button>
                     </Row>
@@ -397,8 +411,8 @@ const Problem = (props) => {
                 <Col sm={11}>
                     <Stage width={max*scale+margin*scale*2} height={max*scale+margin*scale*2} options={{backgroundColor: 0x808080}}>
                         <Graphics draw={draw} />
-                        {props.problem.figure.edges.map((e, n) => <Edge key={`edge${n}`} epsilon={props.problem.epsilon} os={props.problem.figure.vertices[e[0]]} oe={props.problem.figure.vertices[e[1]]} start={vertices[e[0]]} end={vertices[e[1]]} ox={ox} oy={oy} />)}
-                        {props.problem.figure.vertices.map((v, n) => <Vertex key={`vertex${n}`} vertex={vertices[n]} ox={ox} oy={oy} update={updateVertex(n)} />)}
+                        {props.problem.figure.edges.map((e, n) => <Edge key={`edge${n}`} scale={scale} epsilon={props.problem.epsilon} os={props.problem.figure.vertices[e[0]]} oe={props.problem.figure.vertices[e[1]]} start={vertices[e[0]]} end={vertices[e[1]]} ox={ox} oy={oy} />)}
+                        {props.problem.figure.vertices.map((v, n) => <Vertex key={`vertex${n}`} scale={scale} vertex={vertices[n]} ox={ox} oy={oy} update={updateVertex(n)} />)}
                     </Stage>
                 </Col>
             </Row>
