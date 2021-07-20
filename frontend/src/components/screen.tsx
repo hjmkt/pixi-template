@@ -11,14 +11,14 @@ const Vertex = props => {
 
     const mouseDown = e => {
         setDragging(true);
-        let pos = [Math.floor(Math.floor(e.data.global.x/props.scale)*props.scale/2), Math.floor(Math.floor(e.data.global.y/props.scale)*props.scale/2)];
-        props.update([Math.floor(pos[0]*2/props.scale)-props.ox, Math.floor(pos[1]*2/props.scale)-props.oy]);
+        let pos = [Math.round(Math.round(e.data.global.x/props.scale)*props.scale/2), Math.round(Math.round(e.data.global.y/props.scale)*props.scale/2)];
+        props.update([Math.round(pos[0]*2/props.scale)-props.ox, Math.round(pos[1]*2/props.scale)-props.oy]);
     };
 
     const mouseMove = e => {
         if(dragging){
-            let pos = [Math.floor(Math.floor(e.data.global.x/props.scale)*props.scale/2), Math.floor(Math.floor(e.data.global.y/props.scale)*props.scale/2)];
-            props.update([Math.floor(pos[0]*2/props.scale)-props.ox, Math.floor(pos[1]*2/props.scale)-props.oy]);
+            let pos = [Math.round(Math.round(e.data.global.x/props.scale)*props.scale/2), Math.round(Math.round(e.data.global.y/props.scale)*props.scale/2)];
+            props.update([Math.round(pos[0]*2/props.scale)-props.ox, Math.round(pos[1]*2/props.scale)-props.oy]);
         }
     };
 
@@ -32,15 +32,15 @@ const Vertex = props => {
         g.endFill();
     });
 
-    const position = [(Math.floor(props.vertex[0]+props.ox)*props.scale/2), Math.floor((props.vertex[1]+props.oy)*props.scale/2)];
+    const position = [(Math.round(props.vertex[0]+props.ox)*props.scale/2), Math.round((props.vertex[1]+props.oy)*props.scale/2)];
 
     return <Graphics x={position[0]} y={position[1]} draw={draw} interactive={true} mousedown={mouseDown} mousemove={mouseMove} mouseup={mouseUp} />;
 };
 
 
 const Edge = props => {
-    const adjustX = x => Math.floor((x+props.ox)*props.scale);
-    const adjustY = y => Math.floor((y+props.oy)*props.scale);
+    const adjustX = x => Math.round((x+props.ox)*props.scale);
+    const adjustY = y => Math.round((y+props.oy)*props.scale);
     const start = [adjustX(props.start[0]), adjustY(props.start[1])];
     const end = [adjustX(props.end[0]), adjustY(props.end[1])];
     const dist = (x, y) => (x[0]-y[0])*(x[0]-y[0])+(x[1]-y[1])*(x[1]-y[1]);
@@ -297,11 +297,11 @@ const Problem = (props) => {
     }
 
     const zoomin = () => {
-        setScale(scale+1);
+        setScale(scale+2);
     };
 
     const zoomout = () => {
-        setScale(Math.max(1, scale-1));
+        setScale(Math.max(2, scale-2));
     };
 
     const download = () => {
